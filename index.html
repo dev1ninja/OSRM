@@ -1,0 +1,40 @@
+<html>
+    <head>
+		<meta charset="UTF-8">
+		<title>TEST</title>
+		<link rel="stylesheet" type="text/css" href="leaflet.css">
+		<script type="text/javascript" src="leaflet.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css">
+		<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css">
+		<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+		<style>
+			#map{width:100%;height:100%}
+		</style>
+	</head>
+    <body>
+		<div id="map">
+			<div style="position: absolute; bottom: 0">
+			    <button onclick="uploadCSV()">Upload Address</button>
+			</div>
+        </div>
+		<script>
+			function uploadCSV() {window.alert("Upload your CSV!")}
+			var map = L.map('map').setView([37, -95], 5);
+			L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+			L.Control.geocoder().addTo(map);				
+			L.Routing.control({
+			    waypoints: [
+				L.latLng(37, -95),
+				L.latLng(36, -94)
+			    ],
+			    serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
+			  //  serviceUrl: 'https://router.project-osrm.org/route/v1',
+			  //  geocoder: L.Control.Geocoder.nominatim({serviceUrl:'https://router.project-osrm.org/nominatim/'}),
+			  //  geocoder: L.Control.Geocoder.nominatim({serviceUrl:'https://osrm.mgoconnect.org/nominatim/'}),
+			    geocoder: L.Control.Geocoder.nominatim(),
+			    routeWhileDragging: true,
+			}).addTo(map);	 				
+		</script>
+    </body>
+</html>
