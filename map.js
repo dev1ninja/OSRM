@@ -2,11 +2,7 @@ var map = L.map('map').setView([37, -95], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
 var routeControl = L.Routing.control({
-    waypoints: [
-        L.latLng(37, -95),
-        // L.lating("11031 BISSONNET HOUSTON TX 77099-0000")
-        L.latLng(36, -94)
-    ],
+    waypoints: [],
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
@@ -72,28 +68,23 @@ function CSVToArray(strData, strDelimiter) {
 // 2022.9.30 update
 
 var geocoder = L.Control.Geocoder.nominatim();
-var waypoints = [];
+var waypoints = [], total = 0;
 
-function func(address){
-    return new Promise(async (resolve, reject) => {
-        geocoder.geocode(address, function (results) {
-            console.log("results -> ", results)
-            if (results[0] !== undefined) {
-                waypoints.push(L.latLng(results[0].properties.lat, results[0].properties.lon));
-            }
-        })
-        resolve();
+function func(address, len){
+    geocoder.geocode(address, function (results) {
+        total ++
+        if (results[0] !== undefined) {
+            waypoints.push(L.latLng(results[0].properties.lat, results[0].properties.lon));
+        }
+
+        if (total == len) {
+            routeControl.setWaypoints(waypoints)
+        }
     })
 }
 
-async function codeAddress() {
-    let arr = []
+function codeAddress() {
     for (let i = 0; i < address.length; i++) {
-        arr.push(func(address[i][0]))
+        func(address[i][0], address.length)
     }
-    await Promise.all(arr).then(value => {
-        console.log("Finished!", waypoints)
-        routeControl.setWaypoints(waypoints);
-    })
-    return waypoints;
 }
