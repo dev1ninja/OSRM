@@ -71,17 +71,27 @@ function CSVToArray(strData, strDelimiter) {
 }
 // 2022.9.30 update
 
-var  geocoder = L.Control.Geocoder.nominatim();
+var geocoder = L.Control.Geocoder.nominatim();
 var waypoints = [];
 
-function codeAddress() {
-
-  for(var i = 0; i < address.length; i++){
-    geocoder.geocode(address[i][0], function(results) {
-        console.log("results: ", results[0])
-        if(results[0] !== undefined){
-            waypoints.push(L.latLng(results[0].properties.lat, results[0].properties.lon));
-        }
+function func(lat, lon){
+    return new Promise(async (resolve, reject) => {
+        geocoder.geocode(address[i][0], function (results) {
+            if (results[0] !== undefined) {
+                waypoints.push(L.latLng(lat, lon));
+            }
+        })
     })
-  }
+}
+
+async function codeAddress() {
+    let arr = []
+    for (let i = 0; i < address.length; i++) {
+        arr.push(func(results[0].properties.lat, results[0].properties.lon))
+    }
+    await Promise.all(arr).then(value => {
+        console.log("Finished!")
+    })
+    routeControl.setWaypoints(waypoints);
+    return waypoints;
 }
