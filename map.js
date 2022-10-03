@@ -74,9 +74,9 @@ function CSVToArray(strData, strDelimiter) {
 var geocoder = L.Control.Geocoder.nominatim();
 var waypoints = [];
 
-function func(){
+function func(address){
     return new Promise(async (resolve, reject) => {
-        geocoder.geocode(address[i][0], function (results) {
+        geocoder.geocode(address, function (results) {
             if (results[0] !== undefined) {
                 waypoints.push(L.latLng(results[0].properties.lat, results[0].properties.lon));
             }
@@ -87,7 +87,7 @@ function func(){
 async function codeAddress() {
     let arr = []
     for (let i = 0; i < address.length; i++) {
-        arr.push(func())
+        arr.push(func(address[i][0]))
     }
     await Promise.all(arr).then(value => {
         console.log("Finished!")
