@@ -41,7 +41,7 @@ function codeAddress() {
         let result = values.filter(function(row){
             return row !== undefined
         })
-        routeControl.setWaypoints(result)
+        routeControl.setWaypoints([startLocation, ...result])
     })
 }
 
