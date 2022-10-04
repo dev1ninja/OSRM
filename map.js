@@ -7,8 +7,6 @@ var routeControl = L.Routing.control({
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
     show: true,
-}).on('rountesfound', e => {
-    console.log("event: ", e)
 }).addTo(map);
 
 var address;
@@ -34,7 +32,11 @@ function codeAddress() {
         let result = values.filter(function(row){
             return row !== undefined
         })
-        routeControl.setWaypoints(result)
+        routeControl.setWaypoints(result).on('routeselected', function(e) {
+            var route = e.route;
+            console.log("route: ", route)
+            alert('Showing route between waypoints:\n' + JSON.stringify(route.inputWaypoints, null, 2));
+        }).addTo(map)
     })
 }
 
