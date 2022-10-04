@@ -77,6 +77,34 @@ function exportCSV() {
     if (hasResult) {
         let csvContent = "data:text/csv;charset=utf-8,";
         console.log("route Result: ", routeResult)
+        const csvString = [
+            [
+                "Type",
+                "Distance",
+                "Time",
+                "Road",
+                "Direction",
+                "Index",
+                "Mode",
+                "Modifier",
+                "Text"
+            ],
+            ...routeResult.instructions.map(item => [
+                item.type,
+                item.distance,
+                item.time,
+                item.road,
+                item.direction,
+                item.index,
+                item.mode,
+                item.modifier,
+                item.text
+            ])
+        ].map(e => e.join(","))
+        .join("\n");
+
+        let encodeUri = encodeURI(csvContent + csvString);
+        window.open(encodeUri);
     }
 }
 
