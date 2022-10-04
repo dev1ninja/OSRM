@@ -7,7 +7,7 @@ L.Control.geocoder().addTo(map);
 var routeResult, hasResult = false;
 
 var routeControl = L.Routing.control({
-    waypoints: [startLocation],
+    waypoints: startLocation,
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
