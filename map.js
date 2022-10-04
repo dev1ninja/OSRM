@@ -6,19 +6,20 @@ var routeControl = L.Routing.control({
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
+    show: false,
 }).addTo(map);
 
 var address;
 
 // 2022.9.30 update
 $(document).on('click', '#btnUploadFile', function () {
-    if ($("#fileToUpload").get(0).files.length == 0) {
+    if ($("#fileToUpload").get(0).files.length === 0) {
         alert("Please upload the file first.");
         return;
     }
     let fileUpload = $("#fileToUpload").get(0);
     let files = fileUpload.files;
-    if (files[0].name.toLowerCase().lastIndexOf(".csv") == -1) {
+    if (files[0].name.toLowerCase().lastIndexOf(".csv") === -1) {
         alert("Please upload only CSV files");
         return;
     }
@@ -28,7 +29,7 @@ $(document).on('click', '#btnUploadFile', function () {
         let lines = evt.target.result;
         if (lines && lines.length > 0) {
             let line_array = CSVToArray(lines);
-            if (lines.length == bytes) {
+            if (lines.length === bytes) {
                 line_array = line_array.splice(0, line_array.length - 1);
             }
             address = line_array;
@@ -68,23 +69,24 @@ function CSVToArray(strData, strDelimiter) {
 // 2022.9.30 update
 
 var geocoder = L.Control.Geocoder.nominatim();
-var waypoints = [], total = 0;
-
-function func(address, len){
-    geocoder.geocode(address, function (results) {
-        total ++
-        if (results[0] !== undefined) {
-            waypoints.push(L.latLng(results[0].properties.lat, results[0].properties.lon));
-        }
-
-        if (total == len) {
-            routeControl.setWaypoints(waypoints)
-        }
-    })
-}
 
 function codeAddress() {
+    let arr = [];
     for (let i = 0; i < address.length; i++) {
-        func(address[i][0], address.length)
+        arr.push(new Promise((resolve, reject) => {
+            geocoder.geocode(address[i][0], function (results) {
+                if (results[0] !== undefined) {
+                    resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
+                } else {
+                    resolve()
+                }
+            })
+        }));
     }
+    Promise.all(arr).then(values => {
+        let result = values.filter(function(row){
+            return row !== undefined
+        })
+        routeControl.setWaypoints(result)
+    })
 }
