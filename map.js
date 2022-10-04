@@ -9,8 +9,7 @@ var routeControl = L.Routing.control({
     show: true,
 }).on('routeselected', function(e) {
     var route = e.route;
-    console.log("route: ", route)
-    alert('Showing route between waypoints:\n' + JSON.stringify(route.inputWaypoints, null, 2));
+    console.log("Route: ", route);
 }).addTo(map);
 
 var address;
@@ -69,7 +68,14 @@ function uploadCSV() {
 }
 
 function exportCSV() {
-    
+    let a = routeControl.getRouter();
+    let b = routeControl.getWaypoints();
+    let c = routeControl.getPlan();
+    let d = routeControl.route();
+    console.log("getRouter-> ", a);
+    console.log("getWaypoints-> ", b);
+    console.log("getPlan-> ", c);
+    console.log("route-> ", d);
 }
 
 function CSVToArray(strData, strDelimiter) {
