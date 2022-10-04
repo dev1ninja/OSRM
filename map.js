@@ -1,15 +1,21 @@
-var map = L.map('map').setView([37, -95], 5);
+var startLocation = L.latLng(29.701939, -95.273283)
+
+var map = L.map('map').setView([29.701939, -95.273283], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
+
+var routeResult, hasResult = false;
+
 var routeControl = L.Routing.control({
-    // waypoints: [37, -95],
+    waypoints: [startLocation],
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
     show: true,
 }).on('routeselected', function(e) {
-    var route = e.route;
-    console.log("Route: ", route);
+    let route = e.route;
+    routeResult = route;
+    hasResult = true;
 }).addTo(map);
 
 var address;
@@ -68,14 +74,10 @@ function uploadCSV() {
 }
 
 function exportCSV() {
-    let a = routeControl.getRouter();
-    let b = routeControl.getWaypoints();
-    let c = routeControl.getPlan();
-    let d = routeControl.route();
-    console.log("getRouter-> ", a);
-    console.log("getWaypoints-> ", b);
-    console.log("getPlan-> ", c);
-    console.log("route-> ", d);
+    if (hasResult) {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        console.log("route Result: ", routeResult)
+    }
 }
 
 function CSVToArray(strData, strDelimiter) {
