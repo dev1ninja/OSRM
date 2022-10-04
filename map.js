@@ -2,7 +2,7 @@ var map = L.map('map').setView([37, -95], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
 var routeControl = L.Routing.control({
-    waypoints: [],
+    waypoints: [37, -95],
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
