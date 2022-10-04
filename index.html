@@ -39,11 +39,11 @@
 		<div class="container">
 			<div class="form-group">
 				<label for="iorPerCrew">IOR's per Crew:</label>
-				<input type="number" class="form-control" id="iorPerCrew">
+				<input type="number" class="form-control" id="iorPerCrew" disabled>
 			</div>
 			<div class="form-group">
 				<label for="workType">Work Type:</label>
-				<select class="from-control" id="workType">
+				<select class="from-control" id="workType" disabled>
 					<option>WO</option>
 					<option>Billing WO</option>
 					<option>PM WO</option>
@@ -51,7 +51,10 @@
 			</div>
 			<div class="form-group" style="display: flex; flex-direction: row;">
 				<input type="file" id="fileToUpload">
-				<button type="button" style="padding: 5px 8px;" id="btnUploadFile">CSV</button>
+				<button type="button" style="padding: 5px 8px;" id="btnUploadFile">Upload</button>
+			</div>
+			<div class="form-group" style="display: flex; flex-direction: row;">
+				<button type="button" style="padding: 5px 8px;" id="btnExportFile">Export Route</button>
 			</div>
 		</div>
 		<!-- 2022.9.30 update -->
