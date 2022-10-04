@@ -6,7 +6,7 @@ var routeControl = L.Routing.control({
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
-    show: false,
+    show: true,
 }).on('rountesfound', e => {
     console.log("event: ", e)
 }).addTo(map);
