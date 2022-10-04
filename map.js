@@ -7,12 +7,38 @@ var routeControl = L.Routing.control({
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
     show: false,
+}).on('rountesfound', e => {
+    console.log("event: ", e)
 }).addTo(map);
 
 var address;
 
 // 2022.9.30 update
-$(document).on('click', '#btnUploadFile', function () {
+
+var geocoder = L.Control.Geocoder.nominatim();
+
+function codeAddress() {
+    let arr = [];
+    for (let i = 0; i < address.length; i++) {
+        arr.push(new Promise((resolve, reject) => {
+            geocoder.geocode(address[i][0], function (results) {
+                if (results[0] !== undefined) {
+                    resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
+                } else {
+                    resolve()
+                }
+            })
+        }));
+    }
+    Promise.all(arr).then(values => {
+        let result = values.filter(function(row){
+            return row !== undefined
+        })
+        routeControl.setWaypoints(result)
+    })
+}
+
+function uploadCSV() {
     if ($("#fileToUpload").get(0).files.length === 0) {
         alert("Please upload the file first.");
         return;
@@ -38,7 +64,12 @@ $(document).on('click', '#btnUploadFile', function () {
     }
     let blob = files[0].slice(0, bytes);
     reader.readAsBinaryString(blob);
-});
+}
+
+function exportCSV() {
+    
+}
+
 function CSVToArray(strData, strDelimiter) {
     strDelimiter = (strDelimiter || ",");
     let objPattern = new RegExp(
@@ -67,26 +98,3 @@ function CSVToArray(strData, strDelimiter) {
     return (arrData);
 }
 // 2022.9.30 update
-
-var geocoder = L.Control.Geocoder.nominatim();
-
-function codeAddress() {
-    let arr = [];
-    for (let i = 0; i < address.length; i++) {
-        arr.push(new Promise((resolve, reject) => {
-            geocoder.geocode(address[i][0], function (results) {
-                if (results[0] !== undefined) {
-                    resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
-                } else {
-                    resolve()
-                }
-            })
-        }));
-    }
-    Promise.all(arr).then(values => {
-        let result = values.filter(function(row){
-            return row !== undefined
-        })
-        routeControl.setWaypoints(result)
-    })
-}
