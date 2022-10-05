@@ -9,7 +9,7 @@ var routeResult, hasResult = false;
 var routeControl = L.Routing.control({
     waypoints: startLocation,
     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
-    geocoder: L.Control.Geocoder.nominatim(),
+    geocoder: L.Control.Geocoder.nominatim({ serviceUrl: "Geo.mygovernmentonline.org" }),
     routeWhileDragging: true,
     show: true,
 }).on('routeselected', function(e) {
@@ -22,7 +22,7 @@ var address;
 
 // 2022.9.30 update
 
-var geocoder = L.Control.Geocoder.nominatim();
+var geocoder = L.Control.Geocoder.nominatim({ serviceUrl: "Geo.mygovernmentonline.org" });
 
 function codeAddress() {
     let arr = [];
