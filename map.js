@@ -73,7 +73,7 @@ function uploadCSV() {
     reader.readAsBinaryString(blob);
 }
 
-function exportCSV() {
+function exportRoute() {
     if (hasResult) {
         let csvContent = "data:text/csv;charset=utf-8,";
         console.log("route Result: ", routeResult)
@@ -99,6 +99,25 @@ function exportCSV() {
                 item.mode,
                 item.modifier,
                 item.text
+            ])
+        ].map(e => e.join(","))
+        .join("\n");
+
+        let encodeUri = encodeURI(csvContent + csvString);
+        window.open(encodeUri);
+    }
+}
+function exportCoordinate() {
+    if (hasResult) {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        const csvString = [
+            [
+                "Latitude",
+                "Longitude",
+            ],
+            ...routeResult.waypoints.map(item => [
+                item.latLng.lat,
+                item.latLng.lng,
             ])
         ].map(e => e.join(","))
         .join("\n");
