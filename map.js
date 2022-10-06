@@ -12,11 +12,16 @@ var routeControl = L.Routing.control({
     geocoder: L.Control.Geocoder.nominatim(),
     routeWhileDragging: true,
     show: false,
-}).on('routeselected', function(e) {
-    let route = e.route;
-    routeResult = route;
-    hasResult = true;
 }).addTo(map);
+
+// Create Excel 
+var wb = XLSX.utils.book_new();
+wb.Props = {
+    Title: "OSRM",
+    Subject: "OSRM",
+    Author: "OSRM",
+    CreatedDate: new Date()
+};
 
 var address;
 
@@ -38,28 +43,57 @@ function codeAddress() {
         }));
     }
     Promise.all(arr).then(values => {
-        let result = values.filter(function(row){
+        let result = values.filter(function (row) {
             return row !== undefined
         })
 
-        for ( let i = 0 ; i < Math.ceil(values.length / 5) ; i ++ ) {
-            let arr = values.slice(i*5, i*5 + 5)
-            let a = new L.Routing.control({
+        for (let i = 0; i < Math.ceil(result.length / 5); i++) {
+            let arr = result.slice(i * 5, i * 5 + 5)
+            L.Routing.control({
                 waypoints: [startLocation, ...arr],
                 serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
                 geocoder: L.Control.Geocoder.nominatim(),
-                routeWhileDragging: true,
                 show: false,
-            }).on('routeselected', function(e) {
+            }).on('routeselected', function (e) {
                 let route = e.route;
-                console.log("Route Result: ", route)
-                // routeResult = route;
-                // hasResult = true;
-            })
+                wb.SheetNames.push(`OSRM${i}`)
+                console.log("Route Result sub: ", route)
+                const ws_data = [
+                    [
+                        "Type",
+                        "Distance",
+                        "Time",
+                        "Road",
+                        "Direction",
+                        "Index",
+                        "Mode",
+                        "Modifier",
+                        "Text"
+                    ],
+                    ...route.instructions.map(item => [
+                        item.type,
+                        item.distance,
+                        item.time,
+                        item.road,
+                        item.direction,
+                        item.index,
+                        item.mode,
+                        item.modifier,
+                        item.text
+                    ])
+                ]
+                let ws = XLSX.utils.aoa_to_sheet(ws_data);
+                wb.Sheets[`OSRM${i}`] = ws;
+            }).addTo(map);
         }
-        
-        routeControl.setWaypoints([startLocation, ...result])
     })
+}
+
+function s2ab(s) {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
 }
 
 function uploadCSV() {
@@ -91,57 +125,8 @@ function uploadCSV() {
 }
 
 function exportRoute() {
-    if (hasResult) {
-        let csvContent = "data:text/csv;charset=utf-8,";
-        console.log("route Result: ", routeResult)
-        const csvString = [
-            [
-                "Type",
-                "Distance",
-                "Time",
-                "Road",
-                "Direction",
-                "Index",
-                "Mode",
-                "Modifier",
-                "Text"
-            ],
-            ...routeResult.instructions.map(item => [
-                item.type,
-                item.distance,
-                item.time,
-                item.road,
-                item.direction,
-                item.index,
-                item.mode,
-                item.modifier,
-                item.text
-            ])
-        ].map(e => e.join(","))
-        .join("\n");
-
-        let encodeUri = encodeURI(csvContent + csvString);
-        window.open(encodeUri);
-    }
-}
-function exportCoordinate() {
-    if (hasResult) {
-        let csvContent = "data:text/csv;charset=utf-8,";
-        const csvString = [
-            [
-                "Latitude",
-                "Longitude",
-            ],
-            ...routeResult.waypoints.map(item => [
-                item.latLng.lat,
-                item.latLng.lng,
-            ])
-        ].map(e => e.join(","))
-        .join("\n");
-
-        let encodeUri = encodeURI(csvContent + csvString);
-        window.open(encodeUri);
-    }
+    let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'test.xlsx');
 }
 
 function CSVToArray(strData, strDelimiter) {
