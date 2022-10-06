@@ -41,6 +41,23 @@ function codeAddress() {
         let result = values.filter(function(row){
             return row !== undefined
         })
+        
+        // let arr = []
+        // for ( let i = 0; i < values.length; i++ ) {
+        //     arr.push(values[i])
+        //     if ( i % 5 == 0 ) {
+                
+        //         arr = []
+        //     }
+        // }
+        // arr
+
+        for ( let i = 0 ; i < Math.ceil(values.length / 5) ; i ++ ) {
+            let arr = values.slice(i*5, i*5 + 5)
+            let featureGroup = L.featureGroup(arr);
+            featureGroup.addTo(map);
+        }
+        
         routeControl.setWaypoints([startLocation, ...result])
     })
 }
