@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Leaflet Feature Group</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <!-- 2022.9.30 update -->
+      <link rel="stylesheet" type="text/css" href="https://tile.mgoconnect.org/leaflet.css">
+      <script type="text/javascript" src="https://tile.mgoconnect.org/leaflet.js"></script>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css">
+      <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css">
+      <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+   </head>
+   
+   <body>
+      <div id = "map" style = "width:900px; height:580px"></div>
+      <script>
+         // Creating map options
+         var mapOptions = {
+            center: [17.385044, 78.486671],
+            zoom: 7
+         }
+         var map = new L.map('map', mapOptions); // Creating a map object
+         
+         // Creating a Layer object
+         var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+         map.addLayer(layer);      // Adding layer to the map
+         
+         // Creating markers
+         var hydMarker = new L.Marker([17.385044, 78.486671]);
+         var vskpMarker = new L.Marker([17.686816, 83.218482]);
+         var vjwdMarker = new L.Marker([16.506174, 80.648015]);
+         
+         // Creating latlng object
+         var latlngs = [
+            [17.385044, 78.486671],
+            [16.506174, 80.648015],
+            [17.686816, 83.218482]
+         ];
+         var polygon = L.polygon(latlngs, {color: 'red'}); // Creating a polygon
+         
+         // Creating feature group
+         var featureGroup = L.featureGroup([hydMarker, vskpMarker, vjwdMarker, polygon]);
+         featureGroup.setStyle({color:'blue',opacity:.5});
+         featureGroup.bindPopup("Feature Group");
+         featureGroup.addTo(map);      // Adding layer group to map
+      </script>
+   </body>
+   
+</html>
