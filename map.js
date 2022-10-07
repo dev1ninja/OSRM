@@ -4,15 +4,17 @@ var map = L.map('map').setView([29.701939, -95.273283], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
 
-var routeResult, hasResult = false;
+var hasResult = false;
 
-var routeControl = L.Routing.control({
-    waypoints: startLocation,
-    serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
-    geocoder: L.Control.Geocoder.nominatim(),
-    routeWhileDragging: true,
-    show: false,
-}).addTo(map);
+// var routeControl = L.Routing.control({
+//     waypoints: startLocation,
+//     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
+//     geocoder: L.Control.Geocoder.nominatim(),
+//     routeWhileDragging: true,
+//     show: false,
+// }).addTo(map);
+
+L.marker([29.701939, -95.273283]).addTo(map).bindPopup("Start Location")
 
 // Create Excel 
 var wb = XLSX.utils.book_new();
@@ -27,7 +29,7 @@ var address;
 
 // 2022.9.30 update
 
-var geocoder = L.Control.Geocoder.nominatim();
+// var geocoder = L.Control.Geocoder.nominatim();
 
 var myHeaders = new Headers();
 myHeaders.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -86,8 +88,6 @@ function codeAddress() {
                 console.log(i);
                 L.Routing.control({
                     waypoints: [startLocation, ...arr],
-                    serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
-                    geocoder: L.Control.Geocoder.nominatim(),
                     show: false,
                 }).on('routeselected', function (e) {
                     let route = e.route;
