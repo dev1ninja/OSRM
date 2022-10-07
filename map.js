@@ -80,9 +80,10 @@ function codeAddress() {
             return row !== undefined
         })
         console.log("------------>", values)
-        for (let i = 0; i < Math.ceil(result.length / 5); i++) {
+        for (let i = 0; i < Math.ceil(result.length / 50); i++) {
             let arr = result.slice(i * 50, i * 50 + 50)
             setTimeout(() => {
+                console.log(i);
                 L.Routing.control({
                     waypoints: [startLocation, ...arr],
                     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
