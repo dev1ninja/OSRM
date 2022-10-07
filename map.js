@@ -29,64 +29,105 @@ var address;
 
 var geocoder = L.Control.Geocoder.nominatim();
 
+var myHeaders = new Headers();
+myHeaders.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+myHeaders.append("Accept-Language", "en-US,en;q=0.9");
+myHeaders.append("Cache-Control", "max-age=0");
+myHeaders.append("Connection", "keep-alive");
+myHeaders.append("Sec-Fetch-Dest", "document");
+myHeaders.append("Sec-Fetch-Mode", "navigate");
+myHeaders.append("Sec-Fetch-Site", "none");
+myHeaders.append("Sec-Fetch-User", "?1");
+myHeaders.append("Upgrade-Insecure-Requests", "1");
+myHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36");
+myHeaders.append("sec-ch-ua", "\"Chromium\";v=\"106\", \"Google Chrome\";v=\"106\", \"Not;A=Brand\";v=\"99\"");
+myHeaders.append("sec-ch-ua-mobile", "?0");
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
 function codeAddress() {
     let arr = [];
     for (let i = 0; i < address.length; i++) {
         arr.push(new Promise((resolve, reject) => {
-            geocoder.geocode(address[i][0], function (results) {
-                if (results[0] !== undefined) {
-                    resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
-                } else {
+            // geocoder.geocode(address[i][0], function (results) {
+            //     if (results[0] !== undefined) {
+            //         resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
+            //     } else {
+            //         resolve()
+            //     }
+            // })
+            let encode = encodeURI(removeZipCode(address[i][0]))
+            fetch(`https://geo.mygovernmentonline.org/search.php?q=${encode}&format=json&limit=1`, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                let temp = JSON.parse(result)
+                if(temp.length === 0){
                     resolve()
+                } else {
+                    // console.log(temp.length, typeof(temp), "temp: 12", temp)
+                    resolve(L.latLng(temp[0].lat, temp[0].lon));
                 }
             })
+            .catch(error => console.log('error', error));
         }));
     }
     Promise.all(arr).then(values => {
         let result = values.filter(function (row) {
             return row !== undefined
         })
-
+        console.log("------------>", values)
         for (let i = 0; i < Math.ceil(result.length / 5); i++) {
-            let arr = result.slice(i * 5, i * 5 + 5)
-            L.Routing.control({
-                waypoints: [startLocation, ...arr],
-                serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
-                geocoder: L.Control.Geocoder.nominatim(),
-                show: false,
-            }).on('routeselected', function (e) {
-                let route = e.route;
-                wb.SheetNames.push(`OSRM${i}`)
-                console.log("Route Result sub: ", route)
-                const ws_data = [
-                    [
-                        "Type",
-                        "Distance",
-                        "Time",
-                        "Road",
-                        "Direction",
-                        "Index",
-                        "Mode",
-                        "Modifier",
-                        "Text"
-                    ],
-                    ...route.instructions.map(item => [
-                        item.type,
-                        item.distance,
-                        item.time,
-                        item.road,
-                        item.direction,
-                        item.index,
-                        item.mode,
-                        item.modifier,
-                        item.text
-                    ])
-                ]
-                let ws = XLSX.utils.aoa_to_sheet(ws_data);
-                wb.Sheets[`OSRM${i}`] = ws;
-            }).addTo(map);
+            let arr = result.slice(i * 50, i * 50 + 50)
+            setTimeout(() => {
+                L.Routing.control({
+                    waypoints: [startLocation, ...arr],
+                    serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
+                    geocoder: L.Control.Geocoder.nominatim(),
+                    show: false,
+                }).on('routeselected', function (e) {
+                    let route = e.route;
+                    wb.SheetNames.push(`OSRM${i}`)
+                    console.log("Route Result sub: ", route)
+                    const ws_data = [
+                        [
+                            "Type",
+                            "Distance",
+                            "Time",
+                            "Road",
+                            "Direction",
+                            "Index",
+                            "Mode",
+                            "Modifier",
+                            "Text"
+                        ],
+                        ...route.instructions.map(item => [
+                            item.type,
+                            item.distance,
+                            item.time,
+                            item.road,
+                            item.direction,
+                            item.index,
+                            item.mode,
+                            item.modifier,
+                            item.text
+                        ])
+                    ]
+                    let ws = XLSX.utils.aoa_to_sheet(ws_data);
+                    wb.Sheets[`OSRM${i}`] = ws;
+                }).addTo(map);
+            }, i*1000)
+
         }
     })
+}
+
+function removeZipCode(address) {
+    let temp = address.slice(0, address.indexOf("-"));
+    return temp.replace(/[^a-zA-Z0-9 ]/g, "")
 }
 
 function s2ab(s) {
@@ -126,7 +167,7 @@ function uploadCSV() {
 
 function exportRoute() {
     let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'test.xlsx');
+    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'OSRM.xlsx');
 }
 
 function CSVToArray(strData, strDelimiter) {
