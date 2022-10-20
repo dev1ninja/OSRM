@@ -8,12 +8,10 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-   	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
 	<!-- 2022.9.30 update -->
 	<link rel="stylesheet" type="text/css" href="https://tile.mgoconnect.org/leaflet.css">
 	<script type="text/javascript" src="https://tile.mgoconnect.org/leaflet.js"></script>
-	<!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin=""/>
-	<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script> -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css">
 	<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css">
@@ -29,7 +27,7 @@
 			position: absolute;
 			bottom: 0px;
 			width: 350px;
-			background-color: aqua;
+			background-color: #D9EEE1;
 			padding: 10px;
 			margin-right: auto;
 			margin-left: auto;
@@ -43,22 +41,23 @@
 		<div class="container">
 			<div class="form-group">
 				<label for="iorPerCrew">IOR's per Crew:</label>
-				<input type="number" class="form-control" id="iorPerCrew" disabled>
+				<input type="number" class="form-control" id="iorPerCrew">
 			</div>
 			<div class="form-group">
 				<label for="workType">Work Type:</label>
-				<select class="from-control" id="workType" disabled>
+				<select class="form-select form-control" id="workType">
 					<option>WO</option>
 					<option>Billing WO</option>
 					<option>PM WO</option>
 				</select>
 			</div>
-			<div class="form-group" style="display: flex; flex-direction: row;justify-content: space-between;">
-				<input type="file" id="fileToUpload">
-				<button type="button" style="padding: 5px 8px;" id="btnUploadFile" onclick="uploadCSV()">Upload</button>
+			<div class="form-group" style="display: flex; flex-direction: row; justify-content: space-between;">
+				<input type="file" class="form-control" id="fileToUpload" style="margin-right: 10px;">
+				<button type="button" class="btn btn-success" id="btnUploadFile" onclick="uploadCSV()">Upload</button>
 			</div>
-			<div class="form-group" style="display: flex; flex-direction: row;justify-content: space-between;">
-				<button type="button" style="padding: 5px 8px;" id="btnExportRouteResult" onclick="exportRoute()">Export Routes</button>
+			<div class="form-group" style="display: flex; flex-direction: row; justify-content: space-between;">
+				<button type="button" class="btn btn-success" id="btnExportRouteResult" onclick="exportRoute()">Export
+					Routes</button>
 				<!-- <button type="button" style="padding: 5px 8px;" id="btnExportCoordinates" onclick="exportCoordinate()">Export Coordinates</button> -->
 			</div>
 		</div>
