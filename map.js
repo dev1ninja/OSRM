@@ -89,6 +89,10 @@ function codeAddress() {
                 L.Routing.control({
                     waypoints: [startLocation, ...arr],
                     show: false,
+                    // serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
+                    router: L.Routing.osrmv1({
+                        serviceUrl: 'https://osrm.mgoconnect.org/route/v1'
+                    })
                 }).on('routeselected', function (e) {
                     let route = e.route;
                     wb.SheetNames.push(`OSRM${i}`)
