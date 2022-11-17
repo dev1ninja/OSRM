@@ -89,7 +89,6 @@ function codeAddress() {
                 L.Routing.control({
                     waypoints: [startLocation, ...arr],
                     show: false,
-                    // serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
                     router: L.Routing.osrmv1({
                         serviceUrl: 'https://osrm.mgoconnect.org/route/v1'
                     })
