@@ -1,11 +1,12 @@
-var startLocation = L.latLng(29.701939, -95.273283)
+const startLocation = L.latLng(29.701939, -95.273283)
+var arrCSV;
+var isUploaded = false;
 
 var map = L.map('map').setView([29.701939, -95.273283], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
 
-var arrCSV;
-
+// Set up start location mark
 L.marker([29.701939, -95.273283]).addTo(map).bindPopup("Start Location")
 
 // Create Excel 
@@ -17,7 +18,7 @@ wb.Props = {
     CreatedDate: new Date()
 };
 
-function codeAddress(address) {
+async function codeAddress(address) {
     let arr = [];
     for (let i = 0; i < address.length; i++) {
         arr.push(new Promise((resolve, reject) => {
@@ -38,7 +39,7 @@ function codeAddress(address) {
             .catch(error => console.log('error', error));
         }));
     }
-    Promise.all(arr).then(values => {
+    await Promise.all(arr).then(values => {
         console.log("updated arr object: ", arrCSV);
         let result = values.filter(function (row) {
             return row !== undefined
@@ -96,9 +97,9 @@ function removeZipCode(address) {
 }
 
 function s2ab(s) {
-    var buf = new ArrayBuffer(s.length);
-    var view = new Uint8Array(buf);
-    for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+    let buf = new ArrayBuffer(s.length);
+    let view = new Uint8Array(buf);
+    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
     return buf;
 }
 
@@ -115,7 +116,7 @@ function uploadCSV() {
     }
     let reader = new FileReader();
     let bytes = 500000;
-    reader.onloadend = function (evt) {
+    reader.onloadend = async function (evt) {
         let lines = evt.target.result;
         if (lines && lines.length > 0) {
             let line_array = CSVToArray(lines);
@@ -124,7 +125,9 @@ function uploadCSV() {
             if (lines.length === bytes) {
                 line_array = line_array.splice(0, line_array.length - 1);
             }
-            codeAddress(line_array)
+            await codeAddress(line_array)
+            document.querySelector('#btnExportRouteResult').disabled = false;
+            document.querySelector('#btnExportCoordinates').disabled = false;
         }
     }
     let blob = files[0].slice(0, bytes);
@@ -138,7 +141,7 @@ function exportRoute() {
 
 function exportCoordinate() {
     let csvContent = arrCSV.map(e => e.join(",")).join("\r\n");
-    var blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
+    let blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
     saveAs(blob, 'coordinates.csv')
 }
 

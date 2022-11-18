@@ -37,7 +37,6 @@
 
 <body>
 	<div id="map">
-		<!-- 2022.9.30 update -->
 		<div class="container">
 			<div class="form-group">
 				<label for="iorPerCrew">IOR's per Crew:</label>
@@ -56,11 +55,10 @@
 				<button type="button" class="btn btn-success" id="btnUploadFile" onclick="uploadCSV()">Upload</button>
 			</div>
 			<div class="form-group" style="display: flex; flex-direction: row; justify-content: space-between;">
-				<button type="button" class="btn btn-success" id="btnExportRouteResult" onclick="exportRoute()">Export Routes</button>
-				<button type="button" class="btn btn-success" id="btnExportCoordinates" onclick="exportCoordinate()">Export Coordinates</button>
+				<button type="button" class="btn btn-success" id="btnExportRouteResult" disabled onclick="exportRoute()">Export Routes</button>
+				<button type="button" class="btn btn-success" id="btnExportCoordinates" disabled onclick="exportCoordinate()">Export Coordinates</button>
 			</div>
 		</div>
-		<!-- 2022.9.30 update -->
 	</div>
 	<script src="map.js"></script>
 </body>
