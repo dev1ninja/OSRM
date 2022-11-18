@@ -134,7 +134,7 @@ function uploadCSV() {
         return;
     }
     let reader = new FileReader();
-    let bytes = 50000;
+    let bytes = 500000;
     reader.onloadend = function (evt) {
         let lines = evt.target.result;
         if (lines && lines.length > 0) {
