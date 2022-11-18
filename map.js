@@ -17,32 +17,12 @@ wb.Props = {
     CreatedDate: new Date()
 };
 
-var myHeaders = new Headers();
-myHeaders.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-myHeaders.append("Accept-Language", "en-US,en;q=0.9");
-myHeaders.append("Cache-Control", "max-age=0");
-myHeaders.append("Connection", "keep-alive");
-myHeaders.append("Sec-Fetch-Dest", "document");
-myHeaders.append("Sec-Fetch-Mode", "navigate");
-myHeaders.append("Sec-Fetch-Site", "none");
-myHeaders.append("Sec-Fetch-User", "?1");
-myHeaders.append("Upgrade-Insecure-Requests", "1");
-myHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36");
-myHeaders.append("sec-ch-ua", "\"Chromium\";v=\"106\", \"Google Chrome\";v=\"106\", \"Not;A=Brand\";v=\"99\"");
-myHeaders.append("sec-ch-ua-mobile", "?0");
-
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
-
 function codeAddress(address) {
     let arr = [];
     for (let i = 0; i < address.length; i++) {
         arr.push(new Promise((resolve, reject) => {
             let encode = encodeURI(removeZipCode(address[i][0]))
-            fetch(`https://geo.mygovernmentonline.org/search.php?q=${encode}&format=json&limit=1`, requestOptions)
+            fetch(`https://geo.mygovernmentonline.org/search.php?q=${encode}&format=json&limit=1`)
             .then(response => response.text())
             .then(result => {
                 let temp = JSON.parse(result)
@@ -157,9 +137,9 @@ function exportRoute() {
 }
 
 function exportCoordinate() {
-    let csvContent = "data:text/csv;charset=utf-8," + arrCSV.map(e => e.join(",")).join("\r\n");
+    let csvContent = arrCSV.map(e => e.join(",")).join("\r\n");
     var blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
-    saveAs(blob, 'some-data.csv')
+    saveAs(blob, 'coordinates.csv')
 }
 
 function CSVToArray(strData, strDelimiter) {
