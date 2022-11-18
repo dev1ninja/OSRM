@@ -4,15 +4,7 @@ var map = L.map('map').setView([29.701939, -95.273283], 5);
 L.tileLayer('https://tile.mgoconnect.org/osm/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.Control.geocoder().addTo(map);
 
-var hasResult = false;
-
-// var routeControl = L.Routing.control({
-//     waypoints: startLocation,
-//     serviceUrl: 'https://osrm.mgoconnect.org/route/v1',
-//     geocoder: L.Control.Geocoder.nominatim(),
-//     routeWhileDragging: true,
-//     show: false,
-// }).addTo(map);
+var arrCSV;
 
 L.marker([29.701939, -95.273283]).addTo(map).bindPopup("Start Location")
 
@@ -24,12 +16,6 @@ wb.Props = {
     Author: "OSRM",
     CreatedDate: new Date()
 };
-
-var address;
-
-// 2022.9.30 update
-
-// var geocoder = L.Control.Geocoder.nominatim();
 
 var myHeaders = new Headers();
 myHeaders.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -51,26 +37,21 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-function codeAddress() {
+function codeAddress(address) {
     let arr = [];
     for (let i = 0; i < address.length; i++) {
         arr.push(new Promise((resolve, reject) => {
-            // geocoder.geocode(address[i][0], function (results) {
-            //     if (results[0] !== undefined) {
-            //         resolve(L.latLng(results[0].properties.lat, results[0].properties.lon));
-            //     } else {
-            //         resolve()
-            //     }
-            // })
             let encode = encodeURI(removeZipCode(address[i][0]))
             fetch(`https://geo.mygovernmentonline.org/search.php?q=${encode}&format=json&limit=1`, requestOptions)
             .then(response => response.text())
             .then(result => {
                 let temp = JSON.parse(result)
+
                 if(temp.length === 0){
                     resolve()
                 } else {
-                    // console.log(temp.length, typeof(temp), "temp: 12", temp)
+                    arrCSV[i].push(temp[0].lat);
+                    arrCSV[i].push(temp[0].lon);
                     resolve(L.latLng(temp[0].lat, temp[0].lon));
                 }
             })
@@ -78,10 +59,10 @@ function codeAddress() {
         }));
     }
     Promise.all(arr).then(values => {
+        console.log("updated arr object: ", arrCSV);
         let result = values.filter(function (row) {
             return row !== undefined
         })
-        console.log("------------>", values)
         for (let i = 0; i < Math.ceil(result.length / 50); i++) {
             let arr = result.slice(i * 50, i * 50 + 50)
             setTimeout(() => {
@@ -158,11 +139,12 @@ function uploadCSV() {
         let lines = evt.target.result;
         if (lines && lines.length > 0) {
             let line_array = CSVToArray(lines);
+            console.log("CSV array: ", line_array);
+            arrCSV = line_array
             if (lines.length === bytes) {
                 line_array = line_array.splice(0, line_array.length - 1);
             }
-            address = line_array;
-            codeAddress()
+            codeAddress(line_array)
         }
     }
     let blob = files[0].slice(0, bytes);
@@ -172,6 +154,11 @@ function uploadCSV() {
 function exportRoute() {
     let wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
     saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'OSRM.xlsx');
+}
+
+function exportCoordinate() {
+    var blob = new Blob(arrCSV, {type: 'text/csv;charset=utf-8;'})
+    saveAs(blob, 'coordinates-data.csv')
 }
 
 function CSVToArray(strData, strDelimiter) {
@@ -201,4 +188,3 @@ function CSVToArray(strData, strDelimiter) {
     }
     return (arrData);
 }
-// 2022.9.30 update
