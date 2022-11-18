@@ -157,8 +157,9 @@ function exportRoute() {
 }
 
 function exportCoordinate() {
-    var blob = new Blob(arrCSV, {type: 'text/csv;charset=utf-8;'})
-    saveAs(blob, 'coordinates-data.csv')
+    let csvContent = "data:text/csv;charset=utf-8," + arrCSV.map(e => e.join(",")).join("\r\n");
+    var blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
+    saveAs(blob, 'some-data.csv')
 }
 
 function CSVToArray(strData, strDelimiter) {
